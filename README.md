@@ -60,3 +60,12 @@ This is the end result. If the example lies in the blue area, then it will be cl
 ![Cost history 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/costHistory2.png)
 
 ![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/endResult2.png)
+
+
+# Example 3 using 3D data:
+
+![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/simpleData3d.png)
+
+![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/costHistory3d.png)
+
+![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/endResult3d.png)
