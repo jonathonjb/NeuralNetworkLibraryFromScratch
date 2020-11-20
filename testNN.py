@@ -9,13 +9,13 @@ def create3dData():
     circles = []
     squares = []
 
-    for i in range(200):
+    for i in range(2000):
         x = random.random() * 2 + 2
         y = random.random() * 2 + 2
         z = random.random() * 2 + 2
         squares.append([x, y, z, 1])
 
-    for i in range(500):
+    for i in range(5000):
         x = random.random() * 6
         y = random.random() * 6
         z = random.random() * 6
@@ -36,7 +36,6 @@ def create3dData():
 
     ax.scatter(squares[:, 0], squares[:, 1], squares[:, 2], marker='s', color='green')
     ax.scatter(circles[:, 0], circles[:, 1], circles[:, 2], marker='o', color='blue')
-    plt.savefig('3dData')
     plt.show()
 
     return circles, squares
@@ -45,6 +44,26 @@ def create3dData():
 def createRandomData3d(num):
     randData = np.random.rand(3, num) * 6
     return randData
+
+def plotResults3d(num, origCircles, origSquares, predictions, randData):
+    squares = []
+    circles = []
+    for i in range(num):
+        if (predictions[0, i] == 1):
+            squares.append(i)
+        else:
+            circles.append(i)
+    squares = randData[:, squares]
+    circles = randData[:, circles]
+
+    figure = plt.figure()
+    ax = Axes3D(figure)
+
+    ax.scatter(squares[0], squares[1], squares[2], marker='s', color='springgreen')
+    ax.scatter(circles[0], circles[1], circles[2], alpha=0.01, marker='o', color='cornflowerblue')
+    # ax.scatter(origCircles[:, 0], origCircles[:, 1], origCircles[:, 2], marker='o', color='blue')
+    # ax.scatter(origSquares[:, 0], origSquares[:, 1], origSquares[:, 2], marker='s', color='green')
+    plt.show()
 
 def trainNeuralNetworkSimpleData(plotCost=False):
     # classifies if examples are squares or not
@@ -61,39 +80,18 @@ def trainNeuralNetworkSimpleData(plotCost=False):
         Dense(size=1, activation='sigmoid')
     ])
 
-    costHistory = neuralNetwork.train(X.T, y, iterations=500000, learningRate=0.01, printCost=True, printCostRounds=10000)
+    costHistory = neuralNetwork.train(X.T, y, iterations=3000000, learningRate=0.005, miniBatch=True, miniBatchSize=32,
+                                      printCost=True, printCostRounds=1000)
 
     if(plotCost):
         plt.plot(costHistory)
-        plt.savefig('costHistory3d')
         plt.show()
 
     num = 100000
     randData = createRandomData3d(num)
     predictions = neuralNetwork.predict(randData)
 
-    plotResults3d(neuralNetwork, num, origCircles, origSquares, predictions, randData)
-
-def plotResults3d(neuralNetwork, num, origCircles, origSquares, predictions, randData):
-    squares = []
-    circles = []
-    for i in range(num):
-        if (predictions[0, i] == 1):
-            squares.append(i)
-        else:
-            circles.append(i)
-    squares = randData[:, squares]
-    circles = randData[:, circles]
-
-    figure = plt.figure()
-    ax = Axes3D(figure)
-
-    ax.scatter(squares[0], squares[1], squares[2], marker='s', color='springgreen')
-    ax.scatter(circles[0], circles[1], circles[2], alpha=0.01, marker='o', color='cornflowerblue')
-    ax.scatter(origCircles[:, 0], origCircles[:, 1], origCircles[:, 2], marker='o', color='blue')
-    ax.scatter(origSquares[:, 0], origSquares[:, 1], origSquares[:, 2], marker='s', color='green')
-    plt.savefig('endResult3d')
-    plt.show()
+    plotResults3d(num, origCircles, origSquares, predictions, randData)
 
     neuralNetwork.prettyPrint()
 

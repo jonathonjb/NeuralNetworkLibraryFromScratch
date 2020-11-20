@@ -41,22 +41,22 @@ predictions = neuralNetwork.predict(randData)
 # Example 1:
 
 I hand-created a very simple dataset of 24 examples below.
-![Data 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/simpleData.png)
+![Data 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData.png)
 
 The neural network will be used to classify whether the examples passed to it are squares or circles.
 
 The data was used to train the neural network. The 'train' function returned the cost history, which is shown below.
 
-![Cost history 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/costHistory.png)
+![Cost history 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/image/costHistory.png)
 
 This is the end result. If the example lies in the blue area, then it will be classified as a circle / non-square. If it lies in the green area, then it will be clssified as a square.
 
-![End result 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/endResult.png)
+![End result 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult.png)
 
 # Example 2:
 
-![Data 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/simpleData2.png)
+![Data 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData2.png)
 
-![Cost history 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/costHistory2.png)
+![Cost history 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory2.png)
 
-![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/endResult2.png)
+![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/imagesendResult2.png)
