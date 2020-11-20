@@ -47,7 +47,7 @@ The neural network will be used to classify whether the examples passed to it ar
 
 The data was used to train the neural network. The 'train' function returned the cost history, which is shown below.
 
-![Cost history 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/image/costHistory.png)
+![Cost history 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory.png)
 
 This is the end result. If the example lies in the blue area, then it will be classified as a circle / non-square. If it lies in the green area, then it will be clssified as a square.
 
@@ -59,4 +59,13 @@ This is the end result. If the example lies in the blue area, then it will be cl
 
 ![Cost history 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory2.png)
 
-![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/imagesendResult2.png)
+![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult2.png)
+
+
+# Example 3 using 3D data:
+
+![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData3d.png)
+
+![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory3d.png)
+
+![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult3d.png)
