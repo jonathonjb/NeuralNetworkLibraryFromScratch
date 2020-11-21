@@ -9,13 +9,13 @@ def create3dData():
     circles = []
     squares = []
 
-    for i in range(2000):
+    for i in range(200):
         x = random.random() * 2 + 2
         y = random.random() * 2 + 2
         z = random.random() * 2 + 2
         squares.append([x, y, z, 1])
 
-    for i in range(5000):
+    for i in range(500):
         x = random.random() * 6
         y = random.random() * 6
         z = random.random() * 6
@@ -80,8 +80,8 @@ def trainNeuralNetworkSimpleData(plotCost=False):
         Dense(size=1, activation='sigmoid')
     ])
 
-    costHistory = neuralNetwork.train(X.T, y, iterations=3000000, learningRate=0.005, miniBatch=True, miniBatchSize=32,
-                                      printCost=True, printCostRounds=1000)
+    costHistory = neuralNetwork.train(X.T, y, epochs=20000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
+                                      printCost=True, printCostRounds=10000)
 
     if(plotCost):
         plt.plot(costHistory)
@@ -94,7 +94,6 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     plotResults3d(num, origCircles, origSquares, predictions, randData)
 
     neuralNetwork.prettyPrint()
-
 
 def main():
     trainNeuralNetworkSimpleData(plotCost=True)
