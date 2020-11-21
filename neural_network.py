@@ -9,6 +9,7 @@ class NeuralNetwork:
         self.layers = layers
         self.L = len(layers)
         self.initializeWeights()
+        self.optimization = None
 
     def initializeWeights(self):
         prevSize = self.inputSize
@@ -24,6 +25,18 @@ class NeuralNetwork:
         y_batches = [y]
 
         for i in range(epochs):
+            if(self.optimization == 'adam'):
+                self.V = dict()
+                self.S = dict()
+                for l in range(self.L):
+                    layer = self.layers[l]
+                    WShape = layer.weights.shape
+                    bShape = layer.bias.shape
+                    self.V['dW' + str(l + 1)] = np.zeros(WShape)
+                    self.V['db' + str(l + 1)] = np.zeros(bShape)
+                    self.S['dW' + str(l + 1)] = np.zeros(WShape)
+                    self.S['db' + str(l + 1)] = np.zeros(bShape)
+
             if (miniBatch):
                 X_batches, y_batches = self.generateMiniBatches(X, y, miniBatchSize)
 
@@ -32,6 +45,14 @@ class NeuralNetwork:
                 self.printCost(costHistory, i, miniBatch, miniBatchSize)
 
         return costHistory
+
+    def setUp(self, optimization=None):
+        if(optimization != None):
+            self.optimization = optimization
+            if(optimization=='adam'):
+                self.beta1 = 0.9
+                self.beta2 = 0.999
+                self.epsilon = math.pow(10, -8)
 
     def predict(self, X):
         AF, cache = self.forwardPropagation(X)
@@ -96,6 +117,21 @@ class NeuralNetwork:
             dW = (1/self.m) * np.dot(dZ, prevA.T)
             db = (1/self.m) * np.sum(dZ, axis=1, keepdims=True)
             dA = np.dot(W.T, dZ)
+
+            if(self.optimization == 'adam'):
+                self.V['dW' + str(l)] = self.beta1 * self.V['dW' + str(l)] + (1 - self.beta1) * dW
+                self.V['db' + str(l)] = self.beta1 * self.V['db' + str(l)] + (1 - self.beta1) * db
+                self.S['dW' + str(l)] = self.beta2 * self.S['dW' + str(l)] + (1 - self.beta2) * np.square(dW)
+                self.S['db' + str(l)] = self.beta2 * self.S['db' + str(l)] + (1 - self.beta2) * np.square(db)
+
+                V_dW_corrected = self.V['dW' + str(l)] / (1 - self.beta1)
+                V_db_corrected = self.V['db' + str(l)] / (1 - self.beta1)
+                S_dW_corrected = self.S['dW' + str(l)] / (1 - self.beta2)
+                S_db_corrected = self.S['db' + str(l)] / (1 - self.beta2)
+
+                dW = V_dW_corrected / (np.sqrt(S_dW_corrected) + self.epsilon)
+                db = V_db_corrected / (np.sqrt(S_db_corrected) + self.epsilon)
+
             layer.gradientDescentStep(learningRate, dW, db)
 
             l -= 1

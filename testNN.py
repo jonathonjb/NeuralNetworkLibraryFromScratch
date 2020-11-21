@@ -31,12 +31,12 @@ def create3dData():
     circles = np.array(circles)
 
 
-    figure = plt.figure()
-    ax = Axes3D(figure)
-
-    ax.scatter(squares[:, 0], squares[:, 1], squares[:, 2], marker='s', color='green')
-    ax.scatter(circles[:, 0], circles[:, 1], circles[:, 2], marker='o', color='blue')
-    plt.show()
+    # figure = plt.figure()
+    # ax = Axes3D(figure)
+    #
+    # ax.scatter(squares[:, 0], squares[:, 1], squares[:, 2], marker='s', color='green')
+    # ax.scatter(circles[:, 0], circles[:, 1], circles[:, 2], marker='o', color='blue')
+    # plt.show()
 
     return circles, squares
 
@@ -80,8 +80,11 @@ def trainNeuralNetworkSimpleData(plotCost=False):
         Dense(size=1, activation='sigmoid')
     ])
 
-    costHistory = neuralNetwork.train(X.T, y, epochs=20000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
-                                      printCosts=True, printCostRounds=100)
+    neuralNetwork.setUp(optimization='adam')
+
+    costHistory = neuralNetwork.train(X.T, y, epochs=10000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
+                                      printCosts=True, printCostRounds=200)
+
 
     if(plotCost):
         plt.plot(costHistory)
