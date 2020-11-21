@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import math
+import statistics
 
 class NeuralNetwork:
     def __init__(self, inputSize, layers):
@@ -16,41 +17,25 @@ class NeuralNetwork:
             prevSize = layer.size
 
     def train(self, X, y, epochs=100000, learningRate=0.1, miniBatch=False, miniBatchSize=32,
-              printCost=True, printCostRounds=1000):
+              printCosts=True, printCostRounds=1000):
 
-        return self.gradientDescent(X, y, epochs, learningRate, miniBatch, miniBatchSize, printCost, printCostRounds)
-
-    def predict(self, X):
-        AF, cache = self.forwardPropagation(X)
-        return np.round(AF, decimals=0)
-
-    def gradientDescent(self, X, y, epochs, learningRate, miniBatch, miniBatchSize, printCost, printCostRounds):
         costHistory = []
         X_batches = [X]
         y_batches = [y]
 
-        round = 0
         for i in range(epochs):
-            if(miniBatch):
+            if (miniBatch):
                 X_batches, y_batches = self.generateMiniBatches(X, y, miniBatchSize)
 
-            if(i % 10000 == 0):
-                print('Epoch:', i)
-
-            # Each iteration is a gradient descent iteration
-            for X_batch, y_batch in zip(X_batches, y_batches):
-                self.m = X_batch.shape[1]
-
-                AL, cache = self.forwardPropagation(X_batch)
-                cost = self.computeCost(AL, y_batch)
-                costHistory.append(cost)
-                self.backPropagation(AL, y_batch, cache, learningRate)
-
-                if(printCost and round % printCostRounds == 0):
-                    print('Cost after round', round, '-', cost)
-                round += 1
+            self.gradientDescent(X_batches, y_batches, costHistory, learningRate)
+            if (printCosts and i % printCostRounds == 0):
+                self.printCost(costHistory, i, miniBatch, miniBatchSize)
 
         return costHistory
+
+    def predict(self, X):
+        AF, cache = self.forwardPropagation(X)
+        return np.round(AF, decimals=0)
 
     def generateMiniBatches(self, X, y, miniBatchSize):
         indexes = list(range(0, X.shape[1]))
@@ -68,6 +53,15 @@ class NeuralNetwork:
         y_batches.append(y[miniBatchSize * numFullMiniBatches:])
 
         return X_batches, y_batches
+
+    def gradientDescent(self, X_batches, y_batches, costHistory, learningRate):
+        for X_batch, y_batch in zip(X_batches, y_batches):
+            self.m = X_batch.shape[1]
+
+            AL, cache = self.forwardPropagation(X_batch)
+            cost = self.computeCost(AL, y_batch)
+            costHistory.append(cost)
+            self.backPropagation(AL, y_batch, cache, learningRate)
 
     def forwardPropagation(self, X):
         prevA = X
@@ -105,6 +99,13 @@ class NeuralNetwork:
             layer.gradientDescentStep(learningRate, dW, db)
 
             l -= 1
+
+    def printCost(self, costHistory, i, miniBatch, miniBatchSize):
+        if (miniBatch):
+            cost = statistics.mean(costHistory[-1 * miniBatchSize:])
+        else:
+            cost = costHistory[-1]
+        print('Cost after epoch', i, '-', cost)
 
     def prettyPrint(self):
         print('INPUT SIZE:', self.inputSize, '\n')

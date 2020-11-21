@@ -81,7 +81,7 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     ])
 
     costHistory = neuralNetwork.train(X.T, y, epochs=20000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
-                                      printCost=True, printCostRounds=10000)
+                                      printCosts=True, printCostRounds=100)
 
     if(plotCost):
         plt.plot(costHistory)
