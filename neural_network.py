@@ -46,13 +46,11 @@ class NeuralNetwork:
 
         return costHistory
 
-    def setUp(self, optimization=None):
-        if(optimization != None):
-            self.optimization = optimization
-            if(optimization=='adam'):
-                self.beta1 = 0.9
-                self.beta2 = 0.999
-                self.epsilon = math.pow(10, -8)
+    def setup(self, optimization=None):
+        if(optimization=='adam'):
+            self.beta1 = 0.9
+            self.beta2 = 0.999
+            self.epsilon = math.pow(10, -8)
 
     def predict(self, X):
         AF, cache = self.forwardPropagation(X)
@@ -70,8 +68,9 @@ class NeuralNetwork:
             X_batches.append(X[:, indexes[i * miniBatchSize : (i+1) * miniBatchSize]])
             y_batches.append(y[indexes[i * miniBatchSize: (i + 1) * miniBatchSize]])
 
-        X_batches.append(X[:, miniBatchSize * numFullMiniBatches:])
-        y_batches.append(y[miniBatchSize * numFullMiniBatches:])
+        if(X.shape[1] % miniBatchSize != 0):
+            X_batches.append(X[:, miniBatchSize * numFullMiniBatches:])
+            y_batches.append(y[miniBatchSize * numFullMiniBatches:])
 
         return X_batches, y_batches
 
@@ -93,6 +92,7 @@ class NeuralNetwork:
             Z = layer.getZScore(prevA)
             prevA = layer.getActivationValue(Z)
             cache['W' + str(l)] = layer.weights
+            cache['Z' + str(l)] = Z
             cache['A' + str(l)] = prevA
             l += 1
         return prevA, cache
@@ -106,13 +106,15 @@ class NeuralNetwork:
         l = self.L
         for layer in reversed(self.layers):
             W = cache.get('W' + str(l))
+            Z = cache.get('Z' + str(l))
+            A = cache.get('A' + str(l))
             prevA = cache.get('A' + str(l - 1))
 
             if(startFlag):
                 dZ = AL - y
                 startFlag = False
             else:
-                dZ = dA * layer.getActivationDerivative(cache.get('A' + str(l)))
+                dZ = dA * layer.getActivationDerivative(Z, A)
 
             dW = (1/self.m) * np.dot(dZ, prevA.T)
             db = (1/self.m) * np.sum(dZ, axis=1, keepdims=True)

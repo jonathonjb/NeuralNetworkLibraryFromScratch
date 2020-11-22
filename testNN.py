@@ -31,12 +31,12 @@ def create3dData():
     circles = np.array(circles)
 
 
-    # figure = plt.figure()
-    # ax = Axes3D(figure)
-    #
-    # ax.scatter(squares[:, 0], squares[:, 1], squares[:, 2], marker='s', color='green')
-    # ax.scatter(circles[:, 0], circles[:, 1], circles[:, 2], marker='o', color='blue')
-    # plt.show()
+    figure = plt.figure()
+    ax = Axes3D(figure)
+
+    ax.scatter(squares[:, 0], squares[:, 1], squares[:, 2], marker='s', color='green')
+    ax.scatter(circles[:, 0], circles[:, 1], circles[:, 2], marker='o', color='blue')
+    plt.show()
 
     return circles, squares
 
@@ -61,8 +61,8 @@ def plotResults3d(num, origCircles, origSquares, predictions, randData):
 
     ax.scatter(squares[0], squares[1], squares[2], marker='s', color='springgreen')
     ax.scatter(circles[0], circles[1], circles[2], alpha=0.01, marker='o', color='cornflowerblue')
-    # ax.scatter(origCircles[:, 0], origCircles[:, 1], origCircles[:, 2], marker='o', color='blue')
-    # ax.scatter(origSquares[:, 0], origSquares[:, 1], origSquares[:, 2], marker='s', color='green')
+    ax.scatter(origCircles[:, 0], origCircles[:, 1], origCircles[:, 2], marker='o', color='blue')
+    ax.scatter(origSquares[:, 0], origSquares[:, 1], origSquares[:, 2], marker='s', color='green')
     plt.show()
 
 def trainNeuralNetworkSimpleData(plotCost=False):
@@ -75,15 +75,16 @@ def trainNeuralNetworkSimpleData(plotCost=False):
 
 
     neuralNetwork = NeuralNetwork(inputSize=3, layers=[
-        Dense(size=5, activation='tanh'),
-        Dense(size=5, activation='tanh'),
+        Dense(size=5, activation='leaky_relu'),
+        Dense(size=5, activation='leaky_relu'),
+        Dense(size=5, activation='leaky_relu'),
         Dense(size=1, activation='sigmoid')
     ])
 
-    neuralNetwork.setUp(optimization='adam')
+    # neuralNetwork.setup(optimization='adam')
 
-    costHistory = neuralNetwork.train(X.T, y, epochs=10000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
-                                      printCosts=True, printCostRounds=200)
+    costHistory = neuralNetwork.train(X.T, y, epochs=200000, learningRate=0.01, miniBatch=False, miniBatchSize=700,
+                                      printCosts=True, printCostRounds=1000)
 
 
     if(plotCost):
