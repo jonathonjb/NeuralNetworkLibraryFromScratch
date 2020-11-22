@@ -70,7 +70,7 @@ def saveModel(filename, model):
     pickle.dump(model, open(filename, 'wb'))
 
 def loadModel(filename):
-    return pickle.load(open('filename'), 'rb')
+    return pickle.load(open(filename, 'rb'))
 
 def trainNeuralNetworkSimpleData(plotCost=False):
     # classifies if examples are squares or not
@@ -80,23 +80,22 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     userInput = input('Do you want to load the old model?\n'
                   'Type "y" to load the model, and any other key to create a new model from scratch.')
     if(userInput == 'y'):
-        loadModel(modelFileName)
+        neuralNetwork = loadModel(modelFileName)
+    else:
+        neuralNetwork = NeuralNetwork(inputSize=3, layers=[
+            Dense(size=5, activation='leaky_relu'),
+            Dense(size=5, activation='leaky_relu'),
+            Dense(size=1, activation='sigmoid')
+        ])
 
     origCircles, origSquares = create3dData()
     data = np.concatenate((origCircles, origSquares), axis=0)
     X = np.delete(data, -1, axis=1)
     y = data[:, -1]
 
-
-    neuralNetwork = NeuralNetwork(inputSize=3, layers=[
-        Dense(size=5, activation='leaky_relu'),
-        Dense(size=5, activation='leaky_relu'),
-        Dense(size=1, activation='sigmoid')
-    ])
-
     # neuralNetwork.setup(optimization='adam')
 
-    costHistory = neuralNetwork.train(X.T, y, epochs=20000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
+    costHistory = neuralNetwork.train(X.T, y, epochs=30000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
                                       printCosts=True, printCostRounds=1000)
 
 
