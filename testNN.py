@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import random
+import pickle
 
 def create3dData():
     circles = []
@@ -65,8 +66,21 @@ def plotResults3d(num, origCircles, origSquares, predictions, randData):
     ax.scatter(origSquares[:, 0], origSquares[:, 1], origSquares[:, 2], marker='s', color='green')
     plt.show()
 
+def saveModel(filename, model):
+    pickle.dump(model, open(filename, 'wb'))
+
+def loadModel(filename):
+    return pickle.load(open('filename'), 'rb')
+
 def trainNeuralNetworkSimpleData(plotCost=False):
     # classifies if examples are squares or not
+
+    modelFileName = 'model.p'
+
+    userInput = input('Do you want to load the old model?\n'
+                  'Type "y" to load the model, and any other key to create a new model from scratch.')
+    if(userInput == 'y'):
+        loadModel(modelFileName)
 
     origCircles, origSquares = create3dData()
     data = np.concatenate((origCircles, origSquares), axis=0)
@@ -77,13 +91,12 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     neuralNetwork = NeuralNetwork(inputSize=3, layers=[
         Dense(size=5, activation='leaky_relu'),
         Dense(size=5, activation='leaky_relu'),
-        Dense(size=5, activation='leaky_relu'),
         Dense(size=1, activation='sigmoid')
     ])
 
     # neuralNetwork.setup(optimization='adam')
 
-    costHistory = neuralNetwork.train(X.T, y, epochs=200000, learningRate=0.01, miniBatch=False, miniBatchSize=700,
+    costHistory = neuralNetwork.train(X.T, y, epochs=20000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
                                       printCosts=True, printCostRounds=1000)
 
 
@@ -98,6 +111,12 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     plotResults3d(num, origCircles, origSquares, predictions, randData)
 
     neuralNetwork.prettyPrint()
+
+    userInput = input('Do you want to store the model that was recently trained? '
+                  'Type "y" for yes, or any other key to not save the model.')
+
+    if(userInput == 'y'):
+        saveModel(modelFileName, neuralNetwork)
 
 def main():
     trainNeuralNetworkSimpleData(plotCost=True)
