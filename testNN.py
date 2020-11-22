@@ -78,13 +78,14 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     modelFileName = 'model.p'
 
     userInput = input('Do you want to load the old model?\n'
-                  'Type "y" to load the model, and any other key to create a new model from scratch.')
+                  'Type "y" to load the model, and any other key to create a new model from scratch.\n')
     if(userInput == 'y'):
         neuralNetwork = loadModel(modelFileName)
     else:
         neuralNetwork = NeuralNetwork(inputSize=3, layers=[
-            Dense(size=5, activation='leaky_relu'),
-            Dense(size=5, activation='leaky_relu'),
+            Dense(size=16, activation='relu'),
+            Dense(size=16, activation='relu'),
+            Dense(size=16, activation='relu'),
             Dense(size=1, activation='sigmoid')
         ])
 
@@ -93,9 +94,11 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     X = np.delete(data, -1, axis=1)
     y = data[:, -1]
 
-    # neuralNetwork.setup(optimization='adam')
+    neuralNetwork.compile(
+        optimization='adam'
+    )
 
-    costHistory = neuralNetwork.train(X.T, y, epochs=30000, learningRate=0.01, miniBatch=True, miniBatchSize=32,
+    costHistory = neuralNetwork.train(X.T, y, epochs=30000, learningRate=0.001, miniBatch=True, miniBatchSize=32,
                                       printCosts=True, printCostRounds=1000)
 
 
@@ -112,7 +115,7 @@ def trainNeuralNetworkSimpleData(plotCost=False):
     neuralNetwork.prettyPrint()
 
     userInput = input('Do you want to store the model that was recently trained? '
-                  'Type "y" for yes, or any other key to not save the model.')
+                  'Type "y" for yes, or any other key to not save the model.\n')
 
     if(userInput == 'y'):
         saveModel(modelFileName, neuralNetwork)

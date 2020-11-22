@@ -17,6 +17,13 @@ class NeuralNetwork:
             layer.initializeParameters(prevLayerSize=prevSize)
             prevSize = layer.size
 
+    def compile(self, optimization=None):
+        self.optimization = optimization
+        if(optimization=='adam'):
+            self.beta1 = 0.9
+            self.beta2 = 0.999
+            self.epsilon = math.pow(10, -8)
+
     def train(self, X, y, epochs=100000, learningRate=0.1, miniBatch=False, miniBatchSize=32,
               printCosts=True, printCostRounds=1000):
 
@@ -45,12 +52,6 @@ class NeuralNetwork:
                 self.printCost(costHistory, i, miniBatch, miniBatchSize)
 
         return costHistory
-
-    def setup(self, optimization=None):
-        if(optimization=='adam'):
-            self.beta1 = 0.9
-            self.beta2 = 0.999
-            self.epsilon = math.pow(10, -8)
 
     def predict(self, X):
         AF, cache = self.forwardPropagation(X)
@@ -150,7 +151,8 @@ class NeuralNetwork:
         i = 0
         for layer in self.layers:
             weights = layer.weights
-            print('LAYER', i, '\n-------------------------')
+            print('LAYER', i, '- Mean:', layer.weights.mean(), ', STD:', layer.weights.std())
+            print('-------------------------')
             for row in range(weights.shape[0]):
                 print('\t', layer.bias[row, 0], end='')
                 for col in range(weights.shape[1]):
