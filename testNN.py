@@ -102,7 +102,7 @@ def trainNeuralNetworkSimpleData():
     plt.show()
     plotDecisionBoundary(falseValues, trueValues, neuralNetwork)
 
-    testData = np.concatenate(create3dData(10000, 10000), axis=0)
+    testData = np.concatenate(create3dData(numTrueValues=10000, numFalseValues=30000), axis=0)
     X_test = np.delete(data, -1, axis=1).T
     y_test= data[:, -1]
     predictions = neuralNetwork.predict(X_test)
