@@ -97,7 +97,7 @@ def testNeuralNetwork():
         optimization='adam'
     )
 
-    costHistory = neuralNetwork.train(X, y, epochs=1000, learningRate=0.001, miniBatch=True, miniBatchSize=32,
+    costHistory = neuralNetwork.train(X, y, epochs=2000, learningRate=0.001, miniBatch=True, miniBatchSize=32,
                                       regularization=True, lambdaReg=0.1, printCosts=True, printCostRounds=100)
 
     plt.plot(costHistory)

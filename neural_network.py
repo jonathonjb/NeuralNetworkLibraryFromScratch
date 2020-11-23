@@ -21,7 +21,7 @@ class NeuralNetwork:
 
     def compile(self, optimization=None):
         self.optimization = optimization
-        if(optimization=='adam'):
+        if(optimization=='adam' or optimization=='momentum' or optimization=='RMSprop'):
             self.beta1 = 0.9
             self.beta2 = 0.999
             self.epsilon = math.pow(10, -8)
@@ -132,17 +132,19 @@ class NeuralNetwork:
             l -= 1
 
     def initOptimization(self):
-        if (self.optimization == 'adam'):
+        if (self.optimization == 'adam' or self.optimization == 'momentum' or self.optimization == 'RMSprop'):
             self.V = dict()
             self.S = dict()
             for l in range(self.L):
                 layer = self.layers[l]
                 WShape = layer.weights.shape
                 bShape = layer.bias.shape
-                self.V['dW' + str(l + 1)] = np.zeros(WShape)
-                self.V['db' + str(l + 1)] = np.zeros(bShape)
-                self.S['dW' + str(l + 1)] = np.zeros(WShape)
-                self.S['db' + str(l + 1)] = np.zeros(bShape)
+                if(self.optimization == 'momentum' or self.optimization == 'adam'):
+                    self.V['dW' + str(l + 1)] = np.zeros(WShape)
+                    self.V['db' + str(l + 1)] = np.zeros(bShape)
+                if (self.optimization == 'RMSprop' or self.optimization == 'adam'):
+                    self.S['dW' + str(l + 1)] = np.zeros(WShape)
+                    self.S['db' + str(l + 1)] = np.zeros(bShape)
 
 
     def optimize(self, dW, db, l):
@@ -159,6 +161,17 @@ class NeuralNetwork:
 
             dW = V_dW_corrected / (np.sqrt(S_dW_corrected) + self.epsilon)
             db = V_db_corrected / (np.sqrt(S_db_corrected) + self.epsilon)
+        elif (self.optimization == 'momentum'):
+            self.V['dW' + str(l)] = self.beta1 * self.V['dW' + str(l)] + (1 - self.beta1) * dW
+            self.V['db' + str(l)] = self.beta1 * self.V['db' + str(l)] + (1 - self.beta1) * db
+            dW = self.V['dW' + str(l)] / (1 - self.beta1)
+            db = self.V['db' + str(l)] / (1 - self.beta1)
+        elif (self.optimization == 'RMSprop'):
+            self.S['dW' + str(l)] = self.beta1 * self.S['dW' + str(l)] + (1 - self.beta1) * np.square(dW)
+            self.S['db' + str(l)] = self.beta1 * self.S['db' + str(l)] + (1 - self.beta1) * np.square(db)
+            dW = self.S['dW' + str(l)] / (1 - self.beta1)
+            db = self.S['db' + str(l)] / (1 - self.beta1)
+
         return dW, db
 
     def printCost(self, costHistory, i, miniBatch, miniBatchSize):
@@ -166,7 +179,7 @@ class NeuralNetwork:
             cost = statistics.mean(costHistory[-1 * miniBatchSize:])
         else:
             cost = costHistory[-1]
-        print('Cost after epoch', i, '-', cost)
+        print('Epoch:', i, '-', cost)
 
     def prettyPrint(self):
         print('INPUT SIZE:', self.inputSize, '\n')
