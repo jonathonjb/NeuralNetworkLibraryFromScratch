@@ -26,25 +26,25 @@ class NeuralNetwork:
             self.beta2 = 0.999
             self.epsilon = math.pow(10, -8)
 
-    def train(self, X, y, epochs=100000, learningRate=0.1, miniBatch=False, miniBatchSize=32,
-              regularization=True, lambdaReg=0.1, learningRateDecay=False, decayRate=0.001,
-              printCosts=True, printCostRounds=1000):
+    def train(self, X, y, epochs=100000, learningRate=0.1, miniBatchSize=32,
+              regularization=True, lambdaReg=0.1, decayRate=None,
+              printCostRounds=1000):
 
         costHistory = []
         X_batches = [X]
         y_batches = [y]
 
         for i in range(epochs):
-            if(learningRateDecay):
+            if(decayRate != None):
                 learningRate *= 1 / (1 + decayRate * i)
             self.initOptimization()
 
-            if (miniBatch):
+            if (miniBatchSize != None):
                 X_batches, y_batches = self.generateMiniBatches(X, y, miniBatchSize)
 
             self.gradientDescent(X_batches, y_batches, costHistory, learningRate, regularization, lambdaReg)
-            if (printCosts and i % printCostRounds == 0):
-                self.printCost(costHistory, i, miniBatch, miniBatchSize)
+            if (printCostRounds != None and i % printCostRounds == 0):
+                self.printCost(costHistory, i, miniBatchSize)
 
         return costHistory
 
@@ -177,8 +177,8 @@ class NeuralNetwork:
 
         return dW, db
 
-    def printCost(self, costHistory, i, miniBatch, miniBatchSize):
-        if (miniBatch):
+    def printCost(self, costHistory, i, miniBatchSize):
+        if (miniBatchSize != None):
             cost = statistics.mean(costHistory[-1 * miniBatchSize:])
         else:
             cost = costHistory[-1]
