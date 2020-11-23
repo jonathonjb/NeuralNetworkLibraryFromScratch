@@ -47,7 +47,7 @@ def createRandomData3d(num):
     randData = np.random.rand(3, num) * 6
     return randData
 
-def plotDecisionBoundary(falseValues, trueValues, neuralNetwork):
+def plotDecisionBoundary(neuralNetwork, falseValues=None, trueValues=None):
     num = 100000
     randData = createRandomData3d(num)
     predictions = neuralNetwork.predict(randData)
@@ -67,8 +67,10 @@ def plotDecisionBoundary(falseValues, trueValues, neuralNetwork):
 
     ax.scatter(test[0], test[1], test[2], marker='s', color='springgreen')
     ax.scatter(circles[0], circles[1], circles[2], alpha=0.01, marker='o', color='cornflowerblue')
-    ax.scatter(falseValues[:, 0], falseValues[:, 1], falseValues[:, 2], marker='o', color='blue')
-    ax.scatter(trueValues[:, 0], trueValues[:, 1], trueValues[:, 2], marker='s', color='green')
+    if(falseValues != None):
+        ax.scatter(falseValues[:, 0], falseValues[:, 1], falseValues[:, 2], marker='o', color='blue')
+    if (trueValues != None):
+        ax.scatter(trueValues[:, 0], trueValues[:, 1], trueValues[:, 2], marker='s', color='green')
     plt.show()
 
 def saveModel(filename, model):
@@ -77,7 +79,7 @@ def saveModel(filename, model):
 def loadModel(filename):
     return pickle.load(open(filename, 'rb'))
 
-def trainNeuralNetworkSimpleData():
+def testNeuralNetwork():
 
     neuralNetwork = NeuralNetwork(inputSize=3, layers=[
         Dense(size=16, activation='relu'),
@@ -96,15 +98,15 @@ def trainNeuralNetworkSimpleData():
     )
 
     costHistory = neuralNetwork.train(X, y, epochs=1000, learningRate=0.001, miniBatch=True, miniBatchSize=32,
-                                      printCosts=True, printCostRounds=100)
+                                      regularization=True, lambdaReg=0.1, printCosts=True, printCostRounds=100)
 
     plt.plot(costHistory)
     plt.show()
-    plotDecisionBoundary(falseValues, trueValues, neuralNetwork)
+    plotDecisionBoundary(neuralNetwork, falseValues=None, trueValues=None)
 
     testData = np.concatenate(create3dData(numTrueValues=10000, numFalseValues=30000), axis=0)
-    X_test = np.delete(data, -1, axis=1).T
-    y_test= data[:, -1]
+    X_test = np.delete(testData, -1, axis=1).T
+    y_test= testData[:, -1]
     predictions = neuralNetwork.predict(X_test)
 
     print('Accuracy:', Accuracy().evaluate(predictions, y_test))
@@ -113,7 +115,7 @@ def trainNeuralNetworkSimpleData():
 
 
 def main():
-    trainNeuralNetworkSimpleData()
+    testNeuralNetwork()
 
 if __name__ == '__main__':
     main()

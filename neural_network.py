@@ -27,7 +27,7 @@ class NeuralNetwork:
             self.epsilon = math.pow(10, -8)
 
     def train(self, X, y, epochs=100000, learningRate=0.1, miniBatch=False, miniBatchSize=32,
-              printCosts=True, printCostRounds=1000):
+              regularization=False, lambdaReg=1,  printCosts=True, printCostRounds=1000):
 
         costHistory = []
         X_batches = [X]
@@ -39,7 +39,7 @@ class NeuralNetwork:
             if (miniBatch):
                 X_batches, y_batches = self.generateMiniBatches(X, y, miniBatchSize)
 
-            self.gradientDescent(X_batches, y_batches, costHistory, learningRate)
+            self.gradientDescent(X_batches, y_batches, costHistory, learningRate, regularization, lambdaReg)
             if (printCosts and i % printCostRounds == 0):
                 self.printCost(costHistory, i, miniBatch, miniBatchSize)
 
@@ -67,14 +67,14 @@ class NeuralNetwork:
 
         return X_batches, y_batches
 
-    def gradientDescent(self, X_batches, y_batches, costHistory, learningRate):
+    def gradientDescent(self, X_batches, y_batches, costHistory, learningRate, regularization, lambdaReg):
         for X_batch, y_batch in zip(X_batches, y_batches):
             self.m = X_batch.shape[1]
 
             AL, cache = self.forwardPropagation(X_batch)
-            cost = self.computeCost(AL, y_batch)
+            cost = self.computeCost(AL, y_batch, regularization, lambdaReg)
             costHistory.append(cost)
-            self.backPropagation(AL, y_batch, cache, learningRate)
+            self.backPropagation(AL, y_batch, cache, learningRate, regularization, lambdaReg)
 
     def forwardPropagation(self, X):
         prevA = X
@@ -90,10 +90,20 @@ class NeuralNetwork:
             l += 1
         return prevA, cache
 
-    def computeCost(self, A, y):
-        return (-1/self.m) * np.sum(y * np.log(A) + (1 - y) * np.log(1 - A))
+    # uses the cross entropy loss function
+    def computeCost(self, A, y, regularization, lambdaReg):
 
-    def backPropagation(self, AL, y, cache, learningRate):
+        regularization_cost = 0
+        if(regularization):
+            # L2 regularization
+            WSquaredSum = 0
+            for layer in self.layers:
+                WSquaredSum += np.sum(np.square(layer.weights))
+            regularization_cost = lambdaReg / (2 * self.m) * WSquaredSum
+
+        return (-1/self.m) * np.sum(y * np.log(A) + (1 - y) * np.log(1 - A)) + regularization_cost
+
+    def backPropagation(self, AL, y, cache, learningRate, regularization, lambdaReg):
         startFlag = True
         dA = None
         l = self.L
@@ -112,6 +122,9 @@ class NeuralNetwork:
             dW = (1/self.m) * np.dot(dZ, prevA.T)
             db = (1/self.m) * np.sum(dZ, axis=1, keepdims=True)
             dA = np.dot(W.T, dZ)
+
+            if(regularization):
+                dW += lambdaReg / self.m * layer.weights
 
             dW, db = self.optimize(dW, db, l)
             layer.gradientDescentStep(learningRate, dW, db)
