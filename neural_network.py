@@ -27,7 +27,7 @@ class NeuralNetwork:
             self.epsilon = math.pow(10, -8)
 
     def train(self, X, y, epochs=100000, learningRate=0.1, miniBatchSize=32,
-              regularization=True, lambdaReg=0.1, decayRate=None,
+              regularization='L2', lambdaReg=0.1, decayRate=None,
               printCostRounds=1000):
 
         costHistory = []
@@ -97,7 +97,7 @@ class NeuralNetwork:
     def computeCost(self, A, y, regularization, lambdaReg):
 
         regularization_cost = 0
-        if(regularization):
+        if(regularization == 'L2'):
             # L2 regularization
             WSquaredSum = 0
             for layer in self.layers:
@@ -126,7 +126,7 @@ class NeuralNetwork:
             db = (1/self.m) * np.sum(dZ, axis=1, keepdims=True)
             dA = np.dot(W.T, dZ)
 
-            if(regularization):
+            if(regularization == 'L2'):
                 dW += lambdaReg / self.m * layer.weights
 
             dW, db = self.optimize(dW, db, l)

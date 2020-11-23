@@ -98,7 +98,7 @@ def testNeuralNetwork():
     )
 
     costHistory = neuralNetwork.train(X, y, epochs=2000, learningRate=0.001, miniBatchSize=32,
-                                      regularization=True, lambdaReg=0.1, decayRate=0.0000001,
+                                      regularization='L2', lambdaReg=0.1, decayRate=0.0000001,
                                       printCostRounds=100)
 
     plt.plot(costHistory)
