@@ -3,6 +3,8 @@ import random
 import math
 import statistics
 
+np.seterr(all='ignore')
+
 class NeuralNetwork:
     def __init__(self, inputSize, layers):
         self.inputSize = inputSize

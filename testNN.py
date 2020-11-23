@@ -1,22 +1,23 @@
 from neural_network import NeuralNetwork
 from layer import Dense
+from metrics import Accuracy, Recall, Precision
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import random
 import pickle
 
-def create3dData():
-    circles = []
-    squares = []
+def create3dData(numTrueValues, numFalseValues, plot=False):
+    falseValues = []
+    trueValues = []
 
-    for i in range(200):
+    for i in range(numTrueValues):
         x = random.random() * 2 + 2
         y = random.random() * 2 + 2
         z = random.random() * 2 + 2
-        squares.append([x, y, z, 1])
+        trueValues.append([x, y, z, 1])
 
-    for i in range(500):
+    for i in range(numFalseValues):
         x = random.random() * 6
         y = random.random() * 6
         z = random.random() * 6
@@ -26,44 +27,48 @@ def create3dData():
             y = random.random() * 6
             z = random.random() * 6
 
-        circles.append([x, y, z, 0])
+        falseValues.append([x, y, z, 0])
 
-    squares = np.array(squares)
-    circles = np.array(circles)
-
+    trueValues = np.array(trueValues)
+    falseValues = np.array(falseValues)
 
     figure = plt.figure()
     ax = Axes3D(figure)
 
-    ax.scatter(squares[:, 0], squares[:, 1], squares[:, 2], marker='s', color='green')
-    ax.scatter(circles[:, 0], circles[:, 1], circles[:, 2], marker='o', color='blue')
-    plt.show()
+    if(plot):
+        ax.scatter(trueValues[:, 0], trueValues[:, 1], trueValues[:, 2], marker='s', color='green')
+        ax.scatter(falseValues[:, 0], falseValues[:, 1], falseValues[:, 2], marker='o', color='blue')
+        plt.show()
 
-    return circles, squares
+    return falseValues, trueValues
 
-# for the test set
+# plots a bunch of random data using matplotlab to see the decision boundary
 def createRandomData3d(num):
     randData = np.random.rand(3, num) * 6
     return randData
 
-def plotResults3d(num, origCircles, origSquares, predictions, randData):
-    squares = []
+def plotDecisionBoundary(falseValues, trueValues, neuralNetwork):
+    num = 100000
+    randData = createRandomData3d(num)
+    predictions = neuralNetwork.predict(randData)
+
+    test = []
     circles = []
     for i in range(num):
         if (predictions[0, i] == 1):
-            squares.append(i)
+            test.append(i)
         else:
             circles.append(i)
-    squares = randData[:, squares]
+    test = randData[:, test]
     circles = randData[:, circles]
 
     figure = plt.figure()
     ax = Axes3D(figure)
 
-    ax.scatter(squares[0], squares[1], squares[2], marker='s', color='springgreen')
+    ax.scatter(test[0], test[1], test[2], marker='s', color='springgreen')
     ax.scatter(circles[0], circles[1], circles[2], alpha=0.01, marker='o', color='cornflowerblue')
-    ax.scatter(origCircles[:, 0], origCircles[:, 1], origCircles[:, 2], marker='o', color='blue')
-    ax.scatter(origSquares[:, 0], origSquares[:, 1], origSquares[:, 2], marker='s', color='green')
+    ax.scatter(falseValues[:, 0], falseValues[:, 1], falseValues[:, 2], marker='o', color='blue')
+    ax.scatter(trueValues[:, 0], trueValues[:, 1], trueValues[:, 2], marker='s', color='green')
     plt.show()
 
 def saveModel(filename, model):
@@ -72,56 +77,43 @@ def saveModel(filename, model):
 def loadModel(filename):
     return pickle.load(open(filename, 'rb'))
 
-def trainNeuralNetworkSimpleData(plotCost=False):
-    # classifies if examples are squares or not
+def trainNeuralNetworkSimpleData():
 
-    modelFileName = 'model.p'
+    neuralNetwork = NeuralNetwork(inputSize=3, layers=[
+        Dense(size=16, activation='relu'),
+        Dense(size=16, activation='relu'),
+        Dense(size=1, activation='sigmoid')
+    ])
 
-    userInput = input('Do you want to load the old model?\n'
-                  'Type "y" to load the model, and any other key to create a new model from scratch.\n')
-    if(userInput == 'y'):
-        neuralNetwork = loadModel(modelFileName)
-    else:
-        neuralNetwork = NeuralNetwork(inputSize=3, layers=[
-            Dense(size=16, activation='relu'),
-            Dense(size=16, activation='relu'),
-            Dense(size=16, activation='relu'),
-            Dense(size=1, activation='sigmoid')
-        ])
+    falseValues, trueValues = create3dData(numFalseValues=500, numTrueValues=300, plot=True)
+    data = np.concatenate((falseValues, trueValues), axis=0)
 
-    origCircles, origSquares = create3dData()
-    data = np.concatenate((origCircles, origSquares), axis=0)
-    X = np.delete(data, -1, axis=1)
+    X = np.delete(data, -1, axis=1).T
     y = data[:, -1]
 
     neuralNetwork.compile(
         optimization='adam'
     )
 
-    costHistory = neuralNetwork.train(X.T, y, epochs=30000, learningRate=0.001, miniBatch=True, miniBatchSize=32,
-                                      printCosts=True, printCostRounds=1000)
+    costHistory = neuralNetwork.train(X, y, epochs=1000, learningRate=0.001, miniBatch=True, miniBatchSize=32,
+                                      printCosts=True, printCostRounds=100)
 
+    plt.plot(costHistory)
+    plt.show()
+    plotDecisionBoundary(falseValues, trueValues, neuralNetwork)
 
-    if(plotCost):
-        plt.plot(costHistory)
-        plt.show()
+    testData = np.concatenate(create3dData(10000, 10000), axis=0)
+    X_test = np.delete(data, -1, axis=1).T
+    y_test= data[:, -1]
+    predictions = neuralNetwork.predict(X_test)
 
-    num = 100000
-    randData = createRandomData3d(num)
-    predictions = neuralNetwork.predict(randData)
+    print('Accuracy:', Accuracy().evaluate(predictions, y_test))
+    print('Precision:', Precision().evaluate(predictions, y_test))
+    print('Recall:', Recall().evaluate(predictions, y_test))
 
-    plotResults3d(num, origCircles, origSquares, predictions, randData)
-
-    neuralNetwork.prettyPrint()
-
-    userInput = input('Do you want to store the model that was recently trained? '
-                  'Type "y" for yes, or any other key to not save the model.\n')
-
-    if(userInput == 'y'):
-        saveModel(modelFileName, neuralNetwork)
 
 def main():
-    trainNeuralNetworkSimpleData(plotCost=True)
+    trainNeuralNetworkSimpleData()
 
 if __name__ == '__main__':
     main()
