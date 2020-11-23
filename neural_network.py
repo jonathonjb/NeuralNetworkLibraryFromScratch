@@ -27,13 +27,16 @@ class NeuralNetwork:
             self.epsilon = math.pow(10, -8)
 
     def train(self, X, y, epochs=100000, learningRate=0.1, miniBatch=False, miniBatchSize=32,
-              regularization=False, lambdaReg=1,  printCosts=True, printCostRounds=1000):
+              regularization=True, lambdaReg=0.1, learningRateDecay=False, decayRate=0.001,
+              printCosts=True, printCostRounds=1000):
 
         costHistory = []
         X_batches = [X]
         y_batches = [y]
 
         for i in range(epochs):
+            if(learningRateDecay):
+                learningRate *= 1 / (1 + decayRate * i)
             self.initOptimization()
 
             if (miniBatch):
