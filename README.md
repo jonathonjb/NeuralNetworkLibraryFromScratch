@@ -30,15 +30,23 @@ neuralNetwork.compile(
 
 To train the network, you need to call the 'train' function, and pass to it the X (features), and the y (end result). Here are the list of parameters and it's possible values:
 
-##### X: {NumPy Array}
-##### y: {Numpy Array}
-##### epochs: {Integer}                   default: 10000    - Number of times we go through the entire training set when training.
-##### learningRate: {Float}               default: 0.1      - The rate in which the neural network learns during gradient descent.
-##### biniBatchSize: {None, Integer}      default: 32       - The batch size used in gradient descent. If you want to use batch gradient descent instead, set this to None.
-##### regularization: {None, 'L2'}        default: 'L2'     - The regularization algorithm used during training.
-##### lambdaReg: {Float}                  default: 0.1      - Lambda used for regularization
-##### decayRate: {None, Float}            default: None     - The rate in which the learning rae decays during training. If you don't want the learning rate to decay, set this to None.
-##### printCostRounds: {None, Integer}    default: 1000     - Prints out the mean cost on the most recent epoch during training every N rounds. If you don't want to print out the cost every so round, set this to None.
+**X**: {NumPy Array}
+
+**y**: {Numpy Array}
+
+**epochs**: {Integer}                   default: 10000    *- Number of times we go through the entire training set when training.*
+
+**learningRate**: {Float}               default: 0.1      *- The rate in which the neural network learns during gradient descent.*
+
+**biniBatchSize**: {None, Integer}      default: 32       *- The batch size used in gradient descent. If you want to use batch gradient descent instead, set this to None.*
+
+**regularization**: {None, 'L2'}        default: 'L2'     *- The regularization algorithm used during training.*
+
+**lambdaReg**: {Float}                  default: 0.1      *- Lambda used for regularization*
+
+**decayRate**: {None, Float}            default: None     *- The rate in which the learning rae decays during training. If you don't want the learning rate to decay, set this to None.*
+
+**printCostRounds**: {None, Integer}    default: 1000     *- Prints out the mean cost on the most recent epoch during training every N rounds. If you don't want to print out the cost every so round, set this to None.*
 
 Example:
 
@@ -56,6 +64,18 @@ Making predictions is easy. All you need to do is call the predict function and 
 
 ```
 predictions = neuralNetwork.predict(randData)
+```
+
+## Evaluating your artificial neural network model
+
+You may evaluate your model's accuracy, precision or recall by using the classes in the *metrics* file like below.
+
+```
+from metrics import Accuracy, Recall, Precision
+
+accuracy = Accuracy(predictions, y_test).score
+precision = Precision(predictions, y_test).score
+recall = Recall(predictions, y_test).score
 ```
 
 # Example 1:
