@@ -9,23 +9,43 @@ This library definitely isn't nearly as powerful or as efficient as some of the 
 Creating the neural network is simple. Just create a NeuralNetwork object, and set the inputSize to be equal to the number of features needed, and then set the layers to be a list of Layer objects you want in your network. Here is an example:
 
 ```
-neuralNetwork = NeuralNetwork(inputSize=2, layers=[
-  Dense(size=3, activation='tanh'),
-  Dense(size=3, activation='tanh'),
-  Dense(size=1, activation='sigmoid')
-])
+neuralNetwork = NeuralNetwork(inputSize=3, layers=[
+      Dense(size=16, activation='relu'),
+      Dense(size=16, activation='relu'),
+      Dense(size=1, activation='sigmoid')
+  ])
 ```
 
 To increase the depth of the network, add more layers to the neuralNetwork object. To increase the width of each layers, simply change the size of the layers. You should also specify what activation function you want to be used on each layer - at the moment, you can only use the 'tanh' or the 'sigmoid' activation functions. 
 
 ## Training the neural network
 
-To train the network, you need to call the 'train' function, and pass to it the X (features), and the y (end result). You may set the number of iterations used for the gradient descent by changing the 'iterations' value, and you may change the learning rate by modifying the learningRate value.
+Before training the network, you have the option to optimize to your training algorithm by calling the compile function, like below. Currently, three optimizations are supported: 'momentum', 'RMSprop', or 'adam'. It is recommended to use the 'adam' optimization here.
+
+```
+neuralNetwork.compile(
+    optimization='adam'
+)
+```
+
+To train the network, you need to call the 'train' function, and pass to it the X (features), and the y (end result). Here are the list of parameters and it's possible values:
+
+##### X: {NumPy Array}
+##### y: {Numpy Array}
+##### epochs: {Integer}                   default: 10000    - Number of times we go through the entire training set when training.
+##### learningRate: {Float}               default: 0.1      - The rate in which the neural network learns during gradient descent.
+##### biniBatchSize: {None, Integer}      default: 32       - The batch size used in gradient descent. If you want to use batch gradient descent instead, set this to None.
+##### regularization: {None, 'L2'}        default: 'L2'     - The regularization algorithm used during training.
+##### lambdaReg: {Float}                  default: 0.1      - Lambda used for regularization
+##### decayRate: {None, Float}            default: None     - The rate in which the learning rae decays during training. If you don't want the learning rate to decay, set this to None.
+##### printCostRounds: {None, Integer}    default: 1000     - Prints out the mean cost on the most recent epoch during training every N rounds. If you don't want to print out the cost every so round, set this to None.
 
 Example:
 
 ```
-costHistory = neuralNetwork.train(X.T, y, iterations=10000, learningRate=0.05, printCost=True, printCostRounds=1000)
+costHistory = neuralNetwork.train(X, y, epochs=1000, learningRate=0.001, miniBatchSize=1,
+                                      regularization='L2', lambdaReg=0.03, decayRate=0.0000001,
+                                      printCostRounds=100)
 ```
 
 It will return the cost history, which you may plot using the matplotlib library.
@@ -40,16 +60,16 @@ predictions = neuralNetwork.predict(randData)
 
 # Example 1:
 
-I hand-created a very simple dataset of 24 examples below.
+I hand-created a very simple dataset shown below.
 ![Data 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData.png)
 
-The neural network will be used to classify whether the examples passed to it are squares or circles.
+The neural network will be used to classify whether the examples passed to it are 'true or 'false'.
 
 The data was used to train the neural network. The 'train' function returned the cost history, which is shown below.
 
 ![Cost history 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory.png)
 
-This is the end result. If the example lies in the blue area, then it will be classified as a circle / non-square. If it lies in the green area, then it will be clssified as a square.
+This is the end result. If the example lies in the blue area, then it will be classified as 'false'. If it lies in the green area, then it will be clssified as 'true'.
 
 ![End result 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult.png)
 
@@ -62,7 +82,7 @@ This is the end result. If the example lies in the blue area, then it will be cl
 ![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult2.png)
 
 
-# Example 3 using 3D data:
+# Example using 3D data:
 
 ![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData3d.png)
 
