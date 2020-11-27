@@ -104,7 +104,7 @@ This is the end result. If the example lies in the blue area, then it will be cl
 
 # Example using 3D:
 
-The data I'll be using. The 'true' values will have a x, y and z between 2-4. So the perfect solution would be a perfect 2*2*2 cube in the middle of the 3d graph.
+Below is the plot of the dataset I'll be using for this example. The 'true' values will have a x, y and z between 2-4. So the perfect solution would be a perfect 2\*2\*2 cube in the middle of the 3d graph.
 
 ![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData3d.png)
 
