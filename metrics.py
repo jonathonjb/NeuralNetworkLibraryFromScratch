@@ -1,7 +1,7 @@
 class Accuracy:
     def __init__(self, predictions, y):
         numCorrect = 0
-        for prediction , y_curr in zip(predictions[0], y):
+        for prediction , y_curr in zip(predictions, y):
             if (prediction == y_curr):
                 numCorrect += 1
         accuracy = numCorrect / y.shape[0]
@@ -12,7 +12,7 @@ class Recall:
         numTruePositives = 0
         numTruePositivesLabeledPositive = 0
 
-        for prediction, y_curr in zip(predictions[0], y):
+        for prediction, y_curr in zip(predictions, y):
             if(y_curr == 1):
                 numTruePositives += 1
                 if(prediction == 1):
@@ -25,7 +25,7 @@ class Precision:
         numLabeledPositive = 0
         numLabeledPositiveTruePositive = 0
 
-        for prediction, y_curr in zip(predictions[0], y):
+        for prediction, y_curr in zip(predictions, y):
             if(prediction == 1):
                 numLabeledPositive += 1
                 if(y_curr == 1):

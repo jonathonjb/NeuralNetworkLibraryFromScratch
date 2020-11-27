@@ -58,8 +58,10 @@ class NeuralNetwork:
     def predict(self, X):
         if(self.normalization == 'instance'):
             X = self.applyInstanceNormalizationTest(X)
+
         AF, cache = self.forwardPropagation(X)
-        return np.round(AF, decimals=0)
+        predictions = np.argmax(AF, axis=0)
+        return predictions
 
     def generateMiniBatches(self, X, y, miniBatchSize):
         indexes = list(range(0, X.shape[1]))
@@ -71,11 +73,11 @@ class NeuralNetwork:
         numFullMiniBatches = math.floor(X.shape[1] / miniBatchSize)
         for i in range(numFullMiniBatches):
             X_batches.append(X[:, indexes[i * miniBatchSize : (i+1) * miniBatchSize]])
-            y_batches.append(y[indexes[i * miniBatchSize: (i + 1) * miniBatchSize]])
+            y_batches.append(y[:, indexes[i * miniBatchSize: (i + 1) * miniBatchSize]])
 
         if(X.shape[1] % miniBatchSize != 0):
             X_batches.append(X[:, miniBatchSize * numFullMiniBatches:])
-            y_batches.append(y[miniBatchSize * numFullMiniBatches:])
+            y_batches.append(y[:, miniBatchSize * numFullMiniBatches:])
 
         return X_batches, y_batches
 
@@ -110,8 +112,8 @@ class NeuralNetwork:
             for layer in self.layers:
                 WSquaredSum += np.sum(np.square(layer.weights))
             regularization_cost = lambdaReg / (2 * self.m) * WSquaredSum
-
-        return (-1/self.m) * np.sum(y * np.log(A) + (1 - y) * np.log(1 - A)) + regularization_cost
+        return (1/self.m) * np.sum(-1 * np.sum(y * np.log(A), axis=0)) + regularization_cost
+        # return (-1/self.m) * np.sum(y * np.log(A) + (1 - y) * np.log(1 - A)) + regularization_cost
 
     def backPropagation(self, AL, y, cache, learningRate, regularization, lambdaReg):
         startFlag = True

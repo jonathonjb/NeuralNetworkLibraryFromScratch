@@ -22,6 +22,9 @@ class Dense:
             return np.maximum(Z, 0)
         elif(self.activation == 'leaky_relu'):
             return np.maximum(Z, 0.01)
+        elif(self.activation == 'softmax'):
+            tSum = np.sum(np.exp(Z), axis=0)
+            return np.exp(Z) / tSum
 
     def getActivationDerivative(self, Z, activationValue):
         if(self.activation == 'sigmoid'):
@@ -40,6 +43,8 @@ class Dense:
             Z[belowZero] = 0.01
             Z[aboveZero] = 1
             return Z
+        elif(self.activation == 'softmax'):
+            pass # TODO Add this
 
     def gradientDescentStep(self, learningRate, dW, db):
         self.weights -= learningRate * dW
