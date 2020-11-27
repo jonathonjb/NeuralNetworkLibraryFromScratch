@@ -186,15 +186,15 @@ class NeuralNetwork:
 
     def applyInstanceNormalizationTraining(self, X):
         self.mean = np.mean(X, axis=1, keepdims=True)
-        X -= self.mean
-        self.std = np.std(X, axis=1, keepdims=True)
-        X /= self.std
-        return X
+        X_new = X - self.mean
+        self.std = np.std(X_new, axis=1, keepdims=True)
+        X_new /= self.std
+        return X_new
 
     def applyInstanceNormalizationTest(self, X):
-        X -= self.mean
-        X /= self.std
-        return X
+        X_new = X - self.mean
+        X_new /= self.std
+        return X_new
 
     def printCost(self, costHistory, i, miniBatchSize):
         if (miniBatchSize != None):

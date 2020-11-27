@@ -95,9 +95,9 @@ def testNeuralNetwork():
         Dense(size=1, activation='sigmoid')
     ])
 
-    xSize = 100000
-    ySize = 6
-    zSize = 6
+    xSize = 10000
+    ySize = 10
+    zSize = 1000000
     falseValues, trueValues = create3dData(numFalseValues=500, numTrueValues=300, plot=True,
                                            xSize=xSize, ySize=ySize, zSize=zSize)
     data = np.concatenate((falseValues, trueValues), axis=0)
@@ -110,7 +110,7 @@ def testNeuralNetwork():
         normalization='instance'
     )
 
-    costHistory = neuralNetwork.train(X, y, epochs=1000, learningRate=0.001, miniBatchSize=32,
+    costHistory = neuralNetwork.train(X, y, epochs=200, learningRate=0.001, miniBatchSize=32,
                                       regularization='L2', lambdaReg=0.1, decayRate=0.0000001,
                                       printCostRounds=100)
 

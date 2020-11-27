@@ -22,9 +22,12 @@ To increase the depth of the network, add more layers to the neuralNetwork objec
 
 Before training the network, you have the option to optimize to your training algorithm by calling the compile function, like below. Currently, three optimizations are supported: 'momentum', 'RMSprop', or 'adam'. It is recommended to use the 'adam' optimization here.
 
+You also have the option to add normalization to your neural network. Currently, instance normalization is the only type supported.
+
 ```
 neuralNetwork.compile(
-    optimization='adam'
+    optimization='adam',
+    normalization='instance'
 )
 ```
 
@@ -104,14 +107,14 @@ This is the end result. If the example lies in the blue area, then it will be cl
 
 # Example using 3D:
 
-Below is the plot of the dataset I'll be using for this example. The 'true' values will have a x, y and z between 2-4. So the perfect solution would be a perfect 2\*2\*2 cube in the middle of the 3d graph.
+Below is the plot of the dataset I'll be using for this example. X will range between 0-10000, y will range from 0-10, and z will range from 0-1000000. If a data example lies in middle 33% for each axis, it will be labeled as true. So if the x is between 3333 and 6666, the y is between 3 and 6, and z is between 333333 and 666666, then that example will be labed as true, and will be shown as a green square on the plot below.
 
 ![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData3d.png)
 
-Now I train the data. Here, I'm using the mini-batch gradient descent with 32 batches, 'adam' optimization, and 'L2' regularization. The cost history won't be smooth due to the fact that we're using the mini-batch gradient descent, however using the mini-batch gradient descent combined with 'adam' optimization, the gradient descent algorithm will converge faster. I also used L2 regularization to make the curve a bit smoother than it would have if no regularization was used. 
+Now, I train the data using my neural network. The neural network has three layers, the first layers, or the hidden layers will contain 16 neurons, and will use the ReLU activation function, and the third layer will have only one neuron, which uses the sigmoid activation function. During training I'll be using the mini-batch gradient descent with 32-examples batches, 'adam' optimization, 'L2' regularization, and instance normalization. The cost history won't be smooth due to the fact that we're using the mini-batch gradient descent, however using the mini-batch gradient descent combined with 'adam' optimization, plus using instance normalization, the gradient descent algorithm will converge much faster. I also used L2 regularization to make the curve a bit smoother than it would have been if no regularization was used. 
 
 ![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory3d.png)
 
-And this is what the decision boundary looks like for the end result.
+And this is what the decision boundary looks like.
 
 ![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult3d.png)
