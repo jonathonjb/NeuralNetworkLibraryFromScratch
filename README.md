@@ -12,11 +12,11 @@ Creating the neural network is simple. Just create a NeuralNetwork object, and s
 neuralNetwork = NeuralNetwork(inputSize=3, layers=[
       Dense(size=16, activation='relu'),
       Dense(size=16, activation='relu'),
-      Dense(size=1, activation='sigmoid')
+      Dense(size=3, activation='softmax')
   ])
 ```
 
-To increase the depth of the network, add more layers to the neuralNetwork object. To increase the width of each layers, simply change the size of the layers. You should also specify what activation function you want to be used on each layer - The activation functions you can use are: 'sigmoid', 'tanh', 'relu', and 'leaky_relu' 
+To increase the depth of the network, add more layers to the neuralNetwork object. To increase the width of each layers, simply change the size of the layers. You should also specify what activation function you want to be used on each layer - The activation functions you can use are: 'sigmoid', 'tanh', 'relu', and 'leaky_relu'. You may also use the 'softmax' activation function on the output layer.
 
 ## Training the neural network
 
@@ -81,7 +81,7 @@ precision = Precision(predictions, y_test).score
 recall = Recall(predictions, y_test).score
 ```
 
-# Example 1:
+# Simple example:
 
 I hand-created a very simple dataset shown below.
 ![Data 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData.png)
@@ -93,19 +93,10 @@ The data was used to train the neural network. The 'train' function returned the
 ![Cost history 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory.png)
 
 This is the end result. If the example lies in the blue area, then it will be classified as 'false'. If it lies in the green area, then it will be clssified as 'true'.
-
 ![End result 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult.png)
 
-# Example 2:
 
-![Data 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData2.png)
-
-![Cost history 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory2.png)
-
-![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult2.png)
-
-
-# Example using 3D:
+# Example using 3D data:
 
 Below is the plot of the dataset I'll be using for this example. X will range between 0-10000, y will range from 0-10, and z will range from 0-1000000. If a data example lies in middle 33% for each axis, it will be labeled as true. So if the x is between 3333 and 6666, the y is between 3 and 6, and z is between 333333 and 666666, then that example will be labed as true, and will be shown as a green square on the plot below.
 
@@ -118,3 +109,13 @@ Now, I train the data using my neural network. The neural network has three laye
 And this is what the decision boundary looks like.
 
 ![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult3d.png)
+
+# Example with multiple classes
+
+Below is the plot of a dataset which includes three different classes. The architecture of the neural network is exactly the same as the one above, execpt that we will be using the softmax activation function on the final layer, which includes 3 neurons.
+
+![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/3classesData.png)
+
+![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/3classesCostHistory.png)
+
+![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/3classesEndResult.png)
