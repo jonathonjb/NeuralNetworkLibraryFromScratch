@@ -16,7 +16,7 @@ neuralNetwork = NeuralNetwork(inputSize=3, layers=[
   ])
 ```
 
-To increase the depth of the network, add more layers to the neuralNetwork object. To increase the width of each layers, simply change the size of the layers. You should also specify what activation function you want to be used on each layer - at the moment, you can only use the 'tanh' or the 'sigmoid' activation functions. 
+To increase the depth of the network, add more layers to the neuralNetwork object. To increase the width of each layers, simply change the size of the layers. You should also specify what activation function you want to be used on each layer - The activation functions you can use are: 'sigmoid', 'tanh', 'relu', and 'leaky_relu' 
 
 ## Training the neural network
 
@@ -32,19 +32,19 @@ To train the network, you need to call the 'train' function, and pass to it the 
 
 **X**: {NumPy Array}
 
-**y**: {Numpy Array}
+**y**: {NumPy Array}
 
 **epochs**: {Integer}                   default: 10000    *- Number of times we go through the entire training set when training.*
 
 **learningRate**: {Float}               default: 0.1      *- The rate in which the neural network learns during gradient descent.*
 
-**biniBatchSize**: {None, Integer}      default: 32       *- The batch size used in gradient descent. If you want to use batch gradient descent instead, set this to None.*
+**miniBatchSize**: {None, Integer}      default: 32       *- The batch size used in gradient descent. If you want to use batch gradient descent instead, set this to None.*
 
 **regularization**: {None, 'L2'}        default: 'L2'     *- The regularization algorithm used during training.*
 
 **lambdaReg**: {Float}                  default: 0.1      *- Lambda used for regularization*
 
-**decayRate**: {None, Float}            default: None     *- The rate in which the learning rae decays during training. If you don't want the learning rate to decay, set this to None.*
+**decayRate**: {None, Float}            default: None     *- The rate in which the learning rate decays during training. If you don't want the learning rate to decay, set this to None.*
 
 **printCostRounds**: {None, Integer}    default: 1000     *- Prints out the mean cost on the most recent epoch during training every N rounds. If you don't want to print out the cost every so round, set this to None.*
 
@@ -102,10 +102,16 @@ This is the end result. If the example lies in the blue area, then it will be cl
 ![End result 2](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult2.png)
 
 
-# Example using 3D data:
+# Example using 3D:
+
+The data I'll be using. The 'true' values will have a x, y and z between 2-4. So the perfect solution would be a perfect 2*2*2 cube in the middle of the 3d graph.
 
 ![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData3d.png)
 
+Now I train the data. Here, I'm using the mini-batch gradient descent with 32 batches, 'adam' optimization, and 'L2' regularization. The cost history won't be smooth due to the fact that we're using the mini-batch gradient descent, however using the mini-batch gradient descent combined with 'adam' optimization, the gradient descent algorithm will converge faster. I also used L2 regularization to make the curve a bit smoother than it would have if no regularization was used. 
+
 ![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory3d.png)
+
+And this is what the decision boundary looks like for the end result.
 
 ![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult3d.png)

@@ -97,7 +97,7 @@ def testNeuralNetwork():
         optimization='adam'
     )
 
-    costHistory = neuralNetwork.train(X, y, epochs=2000, learningRate=0.001, miniBatchSize=32,
+    costHistory = neuralNetwork.train(X, y, epochs=1000, learningRate=0.001, miniBatchSize=32,
                                       regularization='L2', lambdaReg=0.1, decayRate=0.0000001,
                                       printCostRounds=100)
 
@@ -105,14 +105,14 @@ def testNeuralNetwork():
     plt.show()
     plotDecisionBoundary(neuralNetwork, falseValues=None, trueValues=None)
 
-    testData = np.concatenate(create3dData(numTrueValues=10000, numFalseValues=30000), axis=0)
+    testData = np.concatenate(create3dData(numTrueValues=100000, numFalseValues=100000), axis=0)
     X_test = np.delete(testData, -1, axis=1).T
     y_test= testData[:, -1]
     predictions = neuralNetwork.predict(X_test)
 
-    print('Accuracy:', Accuracy().evaluate(predictions, y_test))
-    print('Precision:', Precision().evaluate(predictions, y_test))
-    print('Recall:', Recall().evaluate(predictions, y_test))
+    print('Accuracy:', Accuracy(predictions, y_test).score)
+    print('Precision:', Precision(predictions, y_test).score)
+    print('Recall:', Recall(predictions, y_test).score)
 
 
 def main():

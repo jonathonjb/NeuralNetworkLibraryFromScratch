@@ -26,7 +26,7 @@ class NeuralNetwork:
             self.beta2 = 0.999
             self.epsilon = math.pow(10, -8)
 
-    def train(self, X, y, epochs=100000, learningRate=0.1, miniBatchSize=32,
+    def train(self, X, y, epochs=10000, learningRate=0.1, miniBatchSize=32,
               regularization='L2', lambdaReg=0.1, decayRate=None,
               printCostRounds=1000):
 
@@ -95,10 +95,8 @@ class NeuralNetwork:
 
     # uses the cross entropy loss function
     def computeCost(self, A, y, regularization, lambdaReg):
-
         regularization_cost = 0
         if(regularization == 'L2'):
-            # L2 regularization
             WSquaredSum = 0
             for layer in self.layers:
                 WSquaredSum += np.sum(np.square(layer.weights))
