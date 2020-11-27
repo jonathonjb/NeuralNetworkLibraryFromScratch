@@ -6,26 +6,31 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import random
 import pickle
+import math
 
-def create3dData(numTrueValues, numFalseValues, plot=False):
+def create3dData(numTrueValues, numFalseValues, plot=False, xSize=6, ySize=6, zSize=6):
     falseValues = []
     trueValues = []
 
+    xBuffer = math.floor(xSize / 3)
+    yBuffer = math.floor(ySize / 3)
+    zBuffer = math.floor(zSize / 3)
     for i in range(numTrueValues):
-        x = random.random() * 2 + 2
-        y = random.random() * 2 + 2
-        z = random.random() * 2 + 2
+        x = random.random() * xBuffer + xBuffer
+        y = random.random() * yBuffer + yBuffer
+        z = random.random() * zBuffer + zBuffer
         trueValues.append([x, y, z, 1])
 
     for i in range(numFalseValues):
-        x = random.random() * 6
-        y = random.random() * 6
-        z = random.random() * 6
+        x = random.random() * xSize
+        y = random.random() * ySize
+        z = random.random() * zSize
 
-        while((x >= 2 and x < 4) and (y >= 2 and y < 4) and (z >= 2 and z < 4)):
-            x = random.random() * 6
-            y = random.random() * 6
-            z = random.random() * 6
+        while((x >= xBuffer and x < xBuffer + xBuffer) and (y >= yBuffer and y < yBuffer + yBuffer) and
+              (z >= zBuffer and z < zBuffer + zBuffer)):
+            x = random.random() * xSize
+            y = random.random() * ySize
+            z = random.random() * zSize
 
         falseValues.append([x, y, z, 0])
 
@@ -43,30 +48,33 @@ def create3dData(numTrueValues, numFalseValues, plot=False):
     return falseValues, trueValues
 
 # plots a bunch of random data using matplotlab to see the decision boundary
-def createRandomData3d(num):
-    randData = np.random.rand(3, num) * 6
+def createRandomData3d(num, xSize, ySize, zSize):
+    randData = np.random.rand(3, num)
+    randData[0] *= xSize
+    randData[1] *= ySize
+    randData[2] *= zSize
     return randData
 
-def plotDecisionBoundary(neuralNetwork, falseValues=None, trueValues=None):
+def plotDecisionBoundary(neuralNetwork, xSize, ySize, zSize, falseValues=None, trueValues=None):
     num = 100000
-    randData = createRandomData3d(num)
+    randData = createRandomData3d(num, xSize, ySize, zSize)
     predictions = neuralNetwork.predict(randData)
 
-    test = []
-    circles = []
+    testTrue = []
+    testFalse = []
     for i in range(num):
         if (predictions[0, i] == 1):
-            test.append(i)
+            testTrue.append(i)
         else:
-            circles.append(i)
-    test = randData[:, test]
-    circles = randData[:, circles]
+            testFalse.append(i)
+    testTrue = randData[:, testTrue]
+    testFalse = randData[:, testFalse]
 
     figure = plt.figure()
     ax = Axes3D(figure)
 
-    ax.scatter(test[0], test[1], test[2], marker='s', color='springgreen')
-    ax.scatter(circles[0], circles[1], circles[2], alpha=0.01, marker='o', color='cornflowerblue')
+    ax.scatter(testTrue[0], testTrue[1], testTrue[2], marker='s', color='springgreen')
+    ax.scatter(testFalse[0], testFalse[1], testFalse[2], alpha=0.01, marker='o', color='cornflowerblue')
     if(falseValues != None):
         ax.scatter(falseValues[:, 0], falseValues[:, 1], falseValues[:, 2], marker='o', color='blue')
     if (trueValues != None):
@@ -87,14 +95,19 @@ def testNeuralNetwork():
         Dense(size=1, activation='sigmoid')
     ])
 
-    falseValues, trueValues = create3dData(numFalseValues=500, numTrueValues=300, plot=True)
+    xSize = 100000
+    ySize = 6
+    zSize = 6
+    falseValues, trueValues = create3dData(numFalseValues=500, numTrueValues=300, plot=True,
+                                           xSize=xSize, ySize=ySize, zSize=zSize)
     data = np.concatenate((falseValues, trueValues), axis=0)
 
     X = np.delete(data, -1, axis=1).T
     y = data[:, -1]
 
     neuralNetwork.compile(
-        optimization='adam'
+        optimization='adam',
+        normalization='instance'
     )
 
     costHistory = neuralNetwork.train(X, y, epochs=1000, learningRate=0.001, miniBatchSize=32,
@@ -103,7 +116,7 @@ def testNeuralNetwork():
 
     plt.plot(costHistory)
     plt.show()
-    plotDecisionBoundary(neuralNetwork, falseValues=None, trueValues=None)
+    plotDecisionBoundary(neuralNetwork, xSize=xSize, ySize=ySize, zSize=zSize, falseValues=None, trueValues=None)
 
     testData = np.concatenate(create3dData(numTrueValues=100000, numFalseValues=100000), axis=0)
     X_test = np.delete(testData, -1, axis=1).T

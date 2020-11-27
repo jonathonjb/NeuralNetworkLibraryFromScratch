@@ -3,7 +3,7 @@ import random
 import math
 import statistics
 
-np.seterr(all='ignore')
+# np.seterr(all='ignore')
 
 class NeuralNetwork:
     def __init__(self, inputSize, layers):
@@ -19,16 +19,23 @@ class NeuralNetwork:
             layer.initializeParameters(prevLayerSize=prevSize)
             prevSize = layer.size
 
-    def compile(self, optimization=None):
+    def compile(self, optimization=None, normalization=None):
         self.optimization = optimization
+        self.normalization = normalization
         if(optimization=='adam' or optimization=='momentum' or optimization=='RMSprop'):
             self.beta1 = 0.9
             self.beta2 = 0.999
             self.epsilon = math.pow(10, -8)
+        if(normalization=='instance'):
+            self.normalization = 'instance'
+
 
     def train(self, X, y, epochs=10000, learningRate=0.1, miniBatchSize=32,
               regularization='L2', lambdaReg=0.1, decayRate=None,
               printCostRounds=1000):
+
+        if(self.normalization == 'instance'):
+            X = self.applyInstanceNormalizationTraining(X)
 
         costHistory = []
         X_batches = [X]
@@ -49,6 +56,8 @@ class NeuralNetwork:
         return costHistory
 
     def predict(self, X):
+        if(self.normalization == 'instance'):
+            X = self.applyInstanceNormalizationTest(X)
         AF, cache = self.forwardPropagation(X)
         return np.round(AF, decimals=0)
 
@@ -174,6 +183,18 @@ class NeuralNetwork:
             db = self.S['db' + str(l)] / (1 - self.beta1)
 
         return dW, db
+
+    def applyInstanceNormalizationTraining(self, X):
+        self.mean = np.mean(X, axis=1, keepdims=True)
+        X -= self.mean
+        self.std = np.std(X, axis=1, keepdims=True)
+        X /= self.std
+        return X
+
+    def applyInstanceNormalizationTest(self, X):
+        X -= self.mean
+        X /= self.std
+        return X
 
     def printCost(self, costHistory, i, miniBatchSize):
         if (miniBatchSize != None):
