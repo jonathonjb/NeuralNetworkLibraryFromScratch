@@ -10,55 +10,38 @@ import random
 import pickle
 import math
 
-def create3dData(numZeroValues, numOneValues, numTwoValues, plot=False, xSize=6, ySize=6, zSize=6):
-    zeroValues = []
-    oneValues = []
-    twoValues = []
+def createData(numOfClasses, numExamplesPerClass, sizePerClass, xSize, ySize, zSize, normalizationScale=1, plot=False):
+    data = []
 
-    xTwoBuffer = math.floor(xSize / 3)
-    yTwoBuffer = math.floor(ySize / 3)
-    zTwoBuffer = math.floor(zSize / 3)
-    for i in range(numOneValues):
-        x = random.random() * xTwoBuffer + xTwoBuffer
-        y = random.random() * yTwoBuffer + yTwoBuffer
-        z = random.random() * zTwoBuffer + zTwoBuffer
-        oneValues.append([x, y, z, 1])
+    size = sizePerClass / 2
+    for i in range(numOfClasses):
+        xCentroid = random.random() * xSize
+        yCentroid = random.random() * ySize
+        zCentroid = random.random() * zSize
 
-    for i in range(numTwoValues):
-        x = random.random() * (.30 * xSize) + (.7 * xSize)
-        y = random.random() * (.30 * ySize) + (.7 * ySize)
-        z = random.random() * (.30 * zSize)
-        twoValues.append([x, y, z, 2])
+        for j in range(numExamplesPerClass):
+            x = xCentroid + np.random.normal(scale=normalizationScale) * (xSize * size)
+            y = yCentroid + np.random.normal(scale=normalizationScale) * (ySize * size)
+            z = zCentroid + np.random.normal(scale=normalizationScale) * (zSize * size)
+            data.append([x, y, z, i])
 
-    for i in range(numZeroValues):
-        x = random.random() * xSize
-        y = random.random() * ySize
-        z = random.random() * zSize
-
-        while(((x >= xTwoBuffer and x < xTwoBuffer + xTwoBuffer) and (y >= yTwoBuffer and y < yTwoBuffer + yTwoBuffer) and
-              (z >= zTwoBuffer and z < zTwoBuffer + zTwoBuffer))
-
-              or ((x >= .7 * xSize) and y >= (.7 * ySize)) and z < (.3 * zSize)):
-            x = random.random() * xSize
-            y = random.random() * ySize
-            z = random.random() * zSize
-
-        zeroValues.append([x, y, z, 0])
-
-    twoValues = np.array(twoValues)
-    oneValues = np.array(oneValues)
-    zeroValues = np.array(zeroValues)
-
-    figure = plt.figure()
-    ax = Axes3D(figure)
+    data = np.array(data)
 
     if(plot):
-        ax.scatter(twoValues[:, 0], twoValues[:, 1], twoValues[:, 2], marker='^', color='orange')
-        ax.scatter(oneValues[:, 0], oneValues[:, 1], oneValues[:, 2], marker='s', color='green')
-        ax.scatter(zeroValues[:, 0], zeroValues[:, 1], zeroValues[:, 2], marker='o', color='blue')
+        colors = ['blue', 'orange', 'green', 'red', 'yellow', 'pink', 'purple', 'lawngreen', 'peru',
+                  'lightcoral', 'gray', 'forestgreen', 'limegreen', 'navy', 'plum', 'crimson']
+        markers = ['.', ',', 'o', 'v', '^', '>', '<', 's', '1', '2', '3', '4', '*', '+', 'x', 'd']
+        figure = plt.figure()
+        ax = Axes3D(figure)
+        ax.set_xlim3d(0, xSize)
+        ax.set_ylim3d(0, ySize)
+        ax.set_zlim3d(0, zSize)
+        for i in range(numOfClasses):
+            currClass = data[data[:, 3] == i]
+            ax.scatter(currClass[:,0], currClass[:,1], currClass[:,2], marker=markers[i], color=colors[i])
         plt.show()
 
-    return zeroValues, oneValues, twoValues
+    return data
 
 # plots a bunch of random data using matplotlab to see the decision boundary
 def createRandomData3d(num, xSize, ySize, zSize):
@@ -68,40 +51,26 @@ def createRandomData3d(num, xSize, ySize, zSize):
     randData[2] *= zSize
     return randData
 
-def plotDecisionBoundary(neuralNetwork, xSize, ySize, zSize, zeroValues=None, oneValues=None, twoValues=None):
-    num = 100000
+def plotDecisionBoundary(neuralNetwork, numOfClasses, xSize, ySize, zSize, zeroValues=None, oneValues=None, twoValues=None):
+    num = 1500000
     randData = createRandomData3d(num, xSize, ySize, zSize)
     predictions = neuralNetwork.predict(randData)
 
-    testTwoValues = []
-    testOneValues = []
-    testZeroValues = []
-    for i in range(num):
-        if (predictions[i] == 2):
-            testTwoValues.append(i)
-        elif (predictions[i] == 1):
-            testOneValues.append(i)
-        else:
-            testZeroValues.append(i)
-
-    testTwoValues = randData[:, testTwoValues]
-    testOneValues = randData[:, testOneValues]
-    testZeroValues = randData[:, testZeroValues]
+    colors = ['blue', 'orange', 'green', 'red', 'yellow', 'pink', 'purple', 'lawngreen', 'peru',
+              'lightcoral', 'gray', 'forestgreen', 'limegreen', 'navy', 'plum', 'crimson']
+    markers = ['.', ',', 'o', 'v', '^', '>', '<', 's', '1', '2', '3', '4', '*', '+', 'x', 'd']
 
     figure = plt.figure()
     ax = Axes3D(figure)
-    ax.scatter(testTwoValues[0], testTwoValues[1], testTwoValues[2], alpha=1, marker='^', color='moccasin')
-    ax.scatter(testOneValues[0], testOneValues[1], testOneValues[2], alpha=1, marker='s', color='springgreen')
-    ax.scatter(testZeroValues[0], testZeroValues[1], testZeroValues[2], alpha=0.01, marker='o', color='cornflowerblue')
+    ax.set_xlim3d(0, xSize)
+    ax.set_ylim3d(0, ySize)
+    ax.set_zlim3d(0, zSize)
+    for i in range(numOfClasses):
+        indexes = (predictions == i)
+        currClass = randData[:, indexes]
+        ax.scatter(currClass[0, :], currClass[1, :], currClass[2, :], alpha=0.01, marker=markers[i], color=colors[i])
     plt.show()
 
-    if(zeroValues != None):
-        ax.scatter(zeroValues[:, 0], zeroValues[:, 1], zeroValues[:, 2], marker='o', color='blue')
-    if (oneValues != None):
-        ax.scatter(oneValues[:, 0], oneValues[:, 1], oneValues[:, 2], marker='s', color='green')
-    if (twoValues != None):
-        ax.scatter(twoValues[:, 0], twoValues[:, 1], twoValues[:, 2], marker='^', color='orange')
-    plt.show()
 
 def saveModel(filename, model):
     pickle.dump(model, open(filename, 'wb'))
@@ -110,22 +79,28 @@ def loadModel(filename):
     return pickle.load(open(filename, 'rb'))
 
 def testNeuralNetwork():
+    xSize = 100000
+    ySize = 100000
+    zSize = 100000
+    numOfClasses = 10
+    testProportion = 0.95
 
     neuralNetwork = NeuralNetwork(inputSize=3, layers=[
         Dense(size=16, activation='relu'),
         Dense(size=16, activation='relu'),
-        Dense(size=3, activation='softmax')
+        Dense(size=numOfClasses, activation='softmax')
     ])
 
-    xSize = 10000
-    ySize = 10
-    zSize = 1000000
-    zeroValues, oneValues, twoValues = create3dData(numZeroValues=500, numOneValues=300, numTwoValues=300, plot=True,
-                                                     xSize=xSize, ySize=ySize, zSize=zSize)
-    data = np.concatenate((zeroValues, oneValues, twoValues), axis=0)
+    data = createData(numOfClasses=numOfClasses, numExamplesPerClass=1000, sizePerClass=0.2,
+                      xSize=100000, ySize=100000, zSize=100000, normalizationScale=1 ,plot=True).T
 
-    X = np.delete(data, -1, axis=1).T
-    y = data[:, -1].astype('int64')
+    np.random.shuffle(data.T)
+    splitIndex = math.floor(data.shape[1] * testProportion)
+    testData = data[:, :splitIndex]
+    data = data[:, splitIndex:]
+
+    X = np.delete(data, -1, axis=0)
+    y = data[-1].astype('int64')
 
     yEncoded = OneHotEncoder(y).yEncoded
 
@@ -140,13 +115,10 @@ def testNeuralNetwork():
 
     plt.plot(costHistory)
     plt.show()
-    plotDecisionBoundary(neuralNetwork, xSize=xSize, ySize=ySize, zSize=zSize,
-                         zeroValues=None, oneValues=None, twoValues=None)
+    plotDecisionBoundary(neuralNetwork, numOfClasses=numOfClasses, xSize=xSize, ySize=ySize, zSize=zSize)
 
-    testData = np.concatenate(create3dData(numZeroValues=100000, numOneValues=100000, numTwoValues=100000,
-                                           xSize=xSize, ySize=ySize, zSize=zSize), axis=0)
-    X_test = np.delete(testData, -1, axis=1).T
-    y_test= testData[:, -1]
+    X_test = np.delete(testData, -1, axis=0)
+    y_test= testData[-1]
     predictions = neuralNetwork.predict(X_test)
 
     print('Accuracy:', Accuracy(predictions, y_test).score)

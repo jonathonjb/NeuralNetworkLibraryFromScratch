@@ -92,17 +92,19 @@ The data was used to train the neural network. The 'train' function returned the
 
 ![Cost history 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory.png)
 
-This is the end result. If the example lies in the blue area, then it will be classified as 'false'. If it lies in the green area, then it will be clssified as 'true'.
+This is the end result. If the example lies in the blue area, then it will be classified as 'false'. If it lies in the green area, then it will be classified as 'true'.
 ![End result 1](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/endResult.png)
 
 
 # Example using 3D data:
 
-Below is the plot of the dataset I'll be using for this example. X will range between 0-10000, y will range from 0-10, and z will range from 0-1000000. If a data example lies in middle 33% for each axis, it will be labeled as true. So if the x is between 3333 and 6666, the y is between 3 and 6, and z is between 333333 and 666666, then that example will be labed as true, and will be shown as a green square on the plot below.
+Below is the plot of the dataset I'll be using for this example. X will range between 0-10000, y will range from 0-10, and z will range from 0-1000000. If a data example lies in middle 33% for each axis, it will be labeled as true.
 
 ![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/simpleData3d.png)
 
-Now, I train the data using my neural network. The neural network has three layers, the first layers, or the hidden layers will contain 16 neurons, and will use the ReLU activation function, and the third layer will have only one neuron, which uses the sigmoid activation function. During training I'll be using the mini-batch gradient descent with 32-examples batches, 'adam' optimization, 'L2' regularization, and instance normalization. The cost history won't be smooth due to the fact that we're using the mini-batch gradient descent, however using the mini-batch gradient descent combined with 'adam' optimization, plus using instance normalization, the gradient descent algorithm will converge much faster. I also used L2 regularization to make the curve a bit smoother than it would have been if no regularization was used. 
+Now, I train the data using the neural network, which has three layers. The first 2 layers contains 16 neurons, and uses the ReLU activation function. The third layer has only one output neuron, which uses the sigmoid activation function. 
+
+During training, the model will be using mini-batch gradient descent with 32-examples batches, 'adam' optimization, 'L2' regularization, and instance normalization. The cost history won't be smooth due to the fact that we're using the mini-batch gradient descent, however, using the mini-batch gradient descent combined with 'adam' optimization, and instance normalization will cause the gradient descent algorithm to converge much faster.  
 
 ![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/costHistory3d.png)
 
@@ -112,10 +114,10 @@ And this is what the decision boundary looks like.
 
 # Example with multiple classes
 
-Below is the plot of a dataset which includes three different classes. The architecture of the neural network is exactly the same as the one above, execpt that we will be using the softmax activation function on the final layer, which includes 3 neurons.
+Below is the plot of a dataset which includes 10 different classes. The architecture of the neural network is exactly the same as the one above, except that we will be using the softmax activation function on the final layer, which includes 10 neurons.
 
-![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/3classesData.png)
+![Data 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/10classesData.png)
 
-![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/3classesCostHistory.png)
+![Cost history 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/10classesCostHistory.png)
 
-![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/3classesEndResult.png)
+![End result 3d](https://github.com/jonathonjb/NeuralNetworkLibraryFromScratch/blob/main/images/10classesEndResult.png)

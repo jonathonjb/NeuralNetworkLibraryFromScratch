@@ -6,7 +6,7 @@ class Dense:
         self.activation = activation
 
     def initializeParameters(self, prevLayerSize):
-        self.weights = np.random.randn(self.size, prevLayerSize) * 0.01
+        self.weights = np.random.randn(self.size, prevLayerSize) * 0.1
         self.bias = np.zeros((self.size, 1))
 
     def getZScore(self, prevA):
